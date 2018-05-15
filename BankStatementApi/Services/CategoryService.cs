@@ -17,24 +17,35 @@ namespace BankStatementApi.Services
 
         public Category GetCategoryForTransactionName(string transactionName)
         {
-            //TODO Find better way to categorise
+            Dictionary<Category, List<string>> categories = RetrieveCategories();
 
-            var categories = _categoryRepository.GetAll().ToDictionary(x => x, x => x.TransactionNames.Split(',').ToList());
-
-            foreach(KeyValuePair<Category, List<string>> category in categories)
+            foreach (KeyValuePair<Category, List<string>> category in categories)
             {
-
-               foreach(var categoryString in category.Value)
+                if(IsTransactionNameInCategory(category.Value, transactionName))
                 {
-                    if (transactionName.Contains(categoryString.Trim())) //TODO remove need for trim fix UI
-                    {
-                        return category.Key;
-                    }
+                    return category.Key;
                 }
-
             }
 
             return null;
+        }
+
+        private bool IsTransactionNameInCategory(List<string> categoryList, string transactionName)
+        {
+            foreach (var category in categoryList)
+            {
+                if (transactionName.Contains(category.Trim())) //TODO remove need for trim fix UI
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private Dictionary<Category, List<string>> RetrieveCategories()
+        {
+            return _categoryRepository.GetAll().ToDictionary(x => x, x => x.TransactionNames.Split(',').ToList());
         }
 
         public bool SaveCategory(CategoryDto categoryDto)
