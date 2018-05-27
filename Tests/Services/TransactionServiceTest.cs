@@ -4,6 +4,8 @@ using BankStatementApi.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Collections.Generic;
+using System.IO;
+using BankStatementApi.DTOs;
 
 namespace Tests.Services
 {
@@ -68,7 +70,38 @@ namespace Tests.Services
             Assert.AreEqual(secondCategory.Name, transactionList[1].Category.Name);
         }
 
-        public Category GetCategory(string Name)
+        [TestMethod]
+        public void ProcessTransactions_SavesTransactionWithCategorySet()
+        {
+            var memorySteam = new MemoryStream();
+
+            var transactionList = new List<Transaction>()
+            {
+                GetTransaction("T1", "OriginalCategory", "T1"),
+                GetTransaction("T2", "OriginalCategory2", "T2"),
+            };
+
+            var transactionDtoList = new List<TransactionDto>()
+            {
+                GetTransactionDto("t1"),
+                GetTransactionDto("t2"),
+            };
+
+            mockCsvService.Setup(x => x.CsvToDtoList<TransactionDto>(memorySteam, "BankOfScotland")).Returns(transactionDtoList);
+
+            var firstCategory = GetCategory("FirstCategory");
+            var secondCategory = GetCategory("SecondCategory");
+
+            mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionDtoList[0].Description)).Returns(firstCategory);
+            mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionDtoList[1].Description)).Returns(secondCategory);
+
+            mockTransactionRepository.Setup(x => x.Save()).Returns(1);
+
+            testSubject.ProcessTransactions(memorySteam, "BankOfScotland");
+
+        }
+
+        private Category GetCategory(string Name)
         {
             return new Category()
             {
@@ -76,7 +109,15 @@ namespace Tests.Services
             };
         }
 
-        public Transaction GetTransaction(string description, string categoryName, string transactionNames)
+        private TransactionDto GetTransactionDto(string description)
+        {
+            return new TransactionDto()
+            {
+                Description = description
+            };
+        }
+
+        private Transaction GetTransaction(string description, string categoryName, string transactionNames)
         {
             return new Transaction()
             {

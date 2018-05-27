@@ -22,7 +22,7 @@ namespace BankStatementApi.Services
             _categoryService = categoryService;
         }
 
-        public void ProcessTransactions(MemoryStream postedFile, string bankName)
+        public bool ProcessTransactions(MemoryStream postedFile, string bankName)
         {
             List<TransactionDto> transactionDtos = _csvService.CsvToDtoList<TransactionDto>(postedFile, bankName);
 
@@ -38,21 +38,27 @@ namespace BankStatementApi.Services
                     Debit = transactionDto.Debit,
                     Description = transactionDto.Description,
                     UserId = 1,
-                    Category = _categoryService.GetCategoryForTransactionName(transactionDto.Description)
-            };
+                };
                 transactionModels.Add(model);
             });
 
-            _transactionRepository.AddRange(transactionModels);
-            _transactionRepository.Save();
-        } 
+          CategoriseTransactions(transactionModels);
+          return SaveTransactions();
+        }
 
         public bool ReCategoriseTransactions()
         {
-            var transactionModels = _transactionRepository.GetAll().ToList();
+            CategoriseTransactions(_transactionRepository.GetAll().ToList());
+            return SaveTransactions();
+        }
 
+        private void CategoriseTransactions(List<Transaction> transactionModels)
+        {
             transactionModels.ForEach(t => t.Category = _categoryService.GetCategoryForTransactionName(t.Description));
+        }
 
+        private bool SaveTransactions()
+        {
             if (_transactionRepository.Save() == 0)
             {
                 return false;

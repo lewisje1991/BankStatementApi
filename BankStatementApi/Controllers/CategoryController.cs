@@ -24,7 +24,6 @@ namespace BankStatementApi.Controllers
             {
                 return false;
             }
-
             return _transactionService.ReCategoriseTransactions();
         }
     }

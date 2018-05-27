@@ -4,6 +4,7 @@ using BankStatementApi.Repositories;
 using BankStatementApi.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using BankStatementApi.DTOs;
 
 namespace Tests.Services
 {
@@ -54,6 +55,74 @@ namespace Tests.Services
             var response = testSubject.GetCategoryForTransactionName("Cake");
 
             Assert.AreEqual(null, response);
+        }
+
+        [TestMethod]
+        public void SaveCategory_SavesASingleCategory()
+        {
+            var categoryDto = new CategoryDto()
+            {
+                Name = "Test",
+                TransactionNames = "No Match",
+                Target = 100
+            };
+
+            mockCategoryRepository.Setup(x => x.Save()).Returns(1);
+
+            var response = testSubject.SaveCategory(categoryDto);
+
+            mockCategoryRepository.Verify(x => x.Add(It.IsAny<Category>()), Times.Once);
+        }
+
+        [TestMethod]
+        public void SaveCategory_FormatsCertainPropertiesBeforeSaving()
+        {
+            var categoryDto = new CategoryDto()
+            {
+                Name = "Test",
+                TransactionNames = "No Match",
+                Target = 100
+            };
+
+            mockCategoryRepository.Setup(x => x.Save()).Returns(1);
+
+            var response = testSubject.SaveCategory(categoryDto);
+
+            mockCategoryRepository.Verify(x => x.Add(It.Is<Category>(p => p.Name == "test" && p.TransactionNames == "no match")), Times.Once);
+        }
+
+        [TestMethod]
+        public void SaveCategory_ReturnsTrueOnSuccessfulSave()
+        {
+            var categoryDto = new CategoryDto()
+            {
+                Name = "Test",
+                TransactionNames = "No Match",
+                Target = 100
+            };
+
+            mockCategoryRepository.Setup(x => x.Save()).Returns(1);
+
+            var response = testSubject.SaveCategory(categoryDto);
+
+            Assert.IsTrue(response);
+        }
+
+        [TestMethod]
+        public void SaveCategory_SaveCategory_ReturnsFalseOnUnsuccessfulSave()
+        {
+            var categoryDto = new CategoryDto()
+            {
+                Name = "Test",
+                TransactionNames = "No Match",
+                Target = 100
+            };
+
+            mockCategoryRepository.Setup(x => x.Save()).Returns(0);
+
+            var response = testSubject.SaveCategory(categoryDto);
+
+            Assert.IsFalse(response);
         }
     }
 }
