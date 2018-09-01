@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BankStatementApi.Controllers
 {
+    [Route("api/[controller]")]
     public class TestAuthController : Controller
     {
         [HttpGet]

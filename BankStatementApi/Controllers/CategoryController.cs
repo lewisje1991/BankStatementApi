@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BankStatementApi.Controllers
 {
+    [Route("api/[controller]")]
     public class CategoryController : Controller
     {
         private ICategoryService _categoryService;

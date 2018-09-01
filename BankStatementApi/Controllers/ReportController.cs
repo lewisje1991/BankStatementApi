@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BankStatementApi.Controllers
 {
+    [Route("api/[controller]")]
     public class ReportController : Controller
     {
         private ITransactionReportService _reportService;

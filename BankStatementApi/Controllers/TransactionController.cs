@@ -6,6 +6,7 @@ using System.IO;
 
 namespace BankStatementApi.Controllers
 {
+    [Route("api/[controller]")]
     public class TransactionController : Controller
     {
         public ITransactionService _transactionService { get; set; }
