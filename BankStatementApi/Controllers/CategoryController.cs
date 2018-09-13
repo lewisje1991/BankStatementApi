@@ -1,7 +1,9 @@
 ﻿using BankStatementApi.DTOs;
 using BankStatementApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace BankStatementApi.Controllers
 {
@@ -19,13 +21,25 @@ namespace BankStatementApi.Controllers
 
         // POST api/category
         [Authorize]
-        public bool Post(CategoryDto categoryDto)
+        [HttpPost]
+        public IActionResult Post([FromBody]CategoryDto categoryDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (!_categoryService.SaveCategory(categoryDto))
             {
-                return false;
+                return StatusCode(StatusCodes.Status500InternalServerError, "An Error Occured During Save");
             }
-            return _transactionService.ReCategoriseTransactions();
+
+            if (_transactionService.ReCategoriseTransactions())
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An Error Occured During Re-Categorisation.");
+            }
+
+            return StatusCode(StatusCodes.Status201Created);
         }
     }
 }

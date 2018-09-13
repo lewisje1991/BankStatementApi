@@ -7,7 +7,7 @@ namespace BankStatementApi.Repositories
 {
     public class TransactionRepository : Repository<Transaction>, ITransactionRepository
     {
-        public TransactionRepository(DbContext context) : base(context)
+        public TransactionRepository(BankStatementApiContext context) : base(context)
         {
             
         }
