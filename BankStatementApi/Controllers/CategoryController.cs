@@ -3,7 +3,9 @@ using BankStatementApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Net;
+using System.Security.Claims;
 
 namespace BankStatementApi.Controllers
 {
@@ -24,6 +26,8 @@ namespace BankStatementApi.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]CategoryDto categoryDto)
         {
+            string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

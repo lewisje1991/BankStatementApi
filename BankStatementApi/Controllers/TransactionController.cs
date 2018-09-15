@@ -18,17 +18,24 @@ namespace BankStatementApi.Controllers
 
         // POST api/transaction
         [Authorize]
-        public void Post(IFormFile file)
+        [HttpPost]
+        public IActionResult Post(IFormFile file)
         {
             if (file != null)
             {
-                using (var stream = new MemoryStream())
+                return BadRequest("Csv file was missing or invalid.");
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                file.CopyTo(stream);
+                if(!_transactionService.ProcessTransactions(stream, "BankOfScotland"))
                 {
-                    file.CopyTo(stream);
-                    _transactionService.ProcessTransactions(stream, "BankOfScotland");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Error during processing of transactions");
                 }
             }
 
+            return Ok("Transactions Uploaded");
         }
     }
 }

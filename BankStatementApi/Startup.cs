@@ -44,6 +44,13 @@ namespace BankStatementApi
                 options.AddPolicy("read:messages", policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
             });
 
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
+
             // register the scope authorization handler
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 
@@ -52,7 +59,7 @@ namespace BankStatementApi
             //Factories
             services.AddTransient<CsvReaderFactory>();
 
-            //Servcies
+            //Services
             services.AddTransient<ITransactionService, TransactionService>();
             services.AddTransient<ICsvService, CsvService>();
             services.AddTransient<ICategoryService, CategoryService>();
@@ -71,6 +78,8 @@ namespace BankStatementApi
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("CorsPolicy");
 
             app.UseAuthentication();
 
