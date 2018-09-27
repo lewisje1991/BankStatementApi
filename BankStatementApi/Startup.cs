@@ -10,6 +10,7 @@ using BankStatementApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using BankStatementApi.Auth;
+using Microsoft.AspNetCore.Http;
 
 namespace BankStatementApi
 {
@@ -39,12 +40,7 @@ namespace BankStatementApi
                 options.Audience = Configuration["Auth0:ApiIdentifier"];
             });
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("read:messages", policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
-            });
-
-            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
@@ -60,7 +56,9 @@ namespace BankStatementApi
             services.AddTransient<CsvReaderFactory>();
 
             //Services
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ITransactionService, TransactionService>();
+            services.AddTransient<IUserService, UserService>();
             services.AddTransient<ICsvService, CsvService>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<ITransactionReportService, TransactionReportService>();
@@ -79,7 +77,7 @@ namespace BankStatementApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("CorsPolicy");
+            app.UseCors("MyPolicy");
 
             app.UseAuthentication();
 

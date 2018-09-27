@@ -12,18 +12,20 @@ namespace Tests.Services
     [TestClass]
     public class TransactionServiceTest
     {
-        private Mock<ITransactionRepository> mockTransactionRepository;
-        private Mock<ICsvService> mockCsvService;
-        private Mock<ICategoryService> mockCategoryService;
+        private Mock<ITransactionRepository> _mockTransactionRepository;
+        private Mock<ICsvService> _mockCsvService;
+        private Mock<ICategoryService> _mockCategoryService;
+        private Mock<IUserService> _mockUserService;
         private TransactionService testSubject;
 
         [TestInitialize]
         public void Setup()
         {
-            mockTransactionRepository = new Mock<ITransactionRepository>();
-            mockCsvService = new Mock<ICsvService>();
-            mockCategoryService = new Mock<ICategoryService>();
-            testSubject = new TransactionService(mockTransactionRepository.Object, mockCsvService.Object, mockCategoryService.Object);
+            _mockTransactionRepository = new Mock<ITransactionRepository>();
+            _mockCsvService = new Mock<ICsvService>();
+            _mockCategoryService = new Mock<ICategoryService>();
+            _mockUserService = new Mock<IUserService>();
+            testSubject = new TransactionService(_mockTransactionRepository.Object, _mockCsvService.Object, _mockCategoryService.Object, _mockUserService.Object);
         }
 
         [TestMethod]
@@ -37,9 +39,9 @@ namespace Tests.Services
 
             var category = GetCategory("FirstCategory");
 
-            mockTransactionRepository.Setup(x => x.GetAll()).Returns(transactionList);
+            _mockTransactionRepository.Setup(x => x.GetAll()).Returns(transactionList);
 
-            mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionList[0].Description)).Returns(category);
+            _mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionList[0].Description)).Returns(category);
 
             var response = testSubject.ReCategoriseTransactions();
 
@@ -58,11 +60,11 @@ namespace Tests.Services
             var firstCategory = GetCategory("FirstCategory");
             var secondCategory = GetCategory("SecondCategory");
 
-            mockTransactionRepository.Setup(x => x.GetAll()).Returns(transactionList);
+            _mockTransactionRepository.Setup(x => x.GetAll()).Returns(transactionList);
 
-            mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionList[0].Description)).Returns(firstCategory);
+            _mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionList[0].Description)).Returns(firstCategory);
 
-            mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionList[1].Description)).Returns(secondCategory);
+            _mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionList[1].Description)).Returns(secondCategory);
 
             var response = testSubject.ReCategoriseTransactions();
 
@@ -87,15 +89,15 @@ namespace Tests.Services
                 GetTransactionDto("t2"),
             };
 
-            mockCsvService.Setup(x => x.CsvToDtoList<TransactionDto>(memorySteam, "BankOfScotland")).Returns(transactionDtoList);
+            _mockCsvService.Setup(x => x.CsvToDtoList<TransactionDto>(memorySteam, "BankOfScotland")).Returns(transactionDtoList);
 
             var firstCategory = GetCategory("FirstCategory");
             var secondCategory = GetCategory("SecondCategory");
 
-            mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionDtoList[0].Description)).Returns(firstCategory);
-            mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionDtoList[1].Description)).Returns(secondCategory);
+            _mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionDtoList[0].Description)).Returns(firstCategory);
+            _mockCategoryService.Setup(x => x.GetCategoryForTransactionName(transactionDtoList[1].Description)).Returns(secondCategory);
 
-            mockTransactionRepository.Setup(x => x.Save()).Returns(1);
+            _mockTransactionRepository.Setup(x => x.Save()).Returns(1);
 
             testSubject.ProcessTransactions(memorySteam, "BankOfScotland");
 

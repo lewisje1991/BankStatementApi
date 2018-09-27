@@ -8,9 +8,8 @@
         public System.DateTime Date { get; set; }
         public decimal Debit { get; set; }
         public decimal Credit { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
-        public virtual User User { get; set; }
         public virtual Category Category { get; set; }
     }
 }

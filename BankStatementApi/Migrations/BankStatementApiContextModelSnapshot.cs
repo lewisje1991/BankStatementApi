@@ -31,7 +31,7 @@ namespace BankStatementApi.Migrations
 
                     b.Property<string>("TransactionNames");
 
-                    b.Property<int>("UserId");
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
@@ -55,31 +55,13 @@ namespace BankStatementApi.Migrations
 
                     b.Property<string>("Type");
 
-                    b.Property<int>("UserId");
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Transactions");
-                });
-
-            modelBuilder.Entity("BankStatementApi.Models.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Email");
-
-                    b.Property<string>("FirstName");
-
-                    b.Property<string>("LastName");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("BankStatementApi.Models.Transaction", b =>
@@ -87,11 +69,6 @@ namespace BankStatementApi.Migrations
                     b.HasOne("BankStatementApi.Models.Category", "Category")
                         .WithMany("Transactions")
                         .HasForeignKey("CategoryId");
-
-                    b.HasOne("BankStatementApi.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

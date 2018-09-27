@@ -12,7 +12,7 @@ namespace BankStatementApi.Repositories
             
         }
         
-        public IEnumerable<Transaction> GetTransactionsForDateRange(DateTime start, DateTime end, int userId)
+        public IEnumerable<Transaction> GetTransactionsForDateRange(DateTime start, DateTime end, string userId)
         {
             return base.Find(t => t.Date >= start && t.Date <= end && t.UserId == userId);
         }

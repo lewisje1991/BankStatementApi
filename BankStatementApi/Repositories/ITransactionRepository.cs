@@ -6,6 +6,6 @@ namespace BankStatementApi.Repositories
 {
     public interface ITransactionRepository : IRepository<Transaction>
     {
-        IEnumerable<Transaction> GetTransactionsForDateRange(DateTime start, DateTime end, int userId);
+        IEnumerable<Transaction> GetTransactionsForDateRange(DateTime start, DateTime end, string userId);
     }
 }

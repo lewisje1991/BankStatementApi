@@ -1,5 +1,6 @@
 ﻿using BankStatementApi.DTOs;
 using BankStatementApi.Models;
+using System.Collections.Generic;
 
 namespace BankStatementApi.Services
 {
@@ -8,5 +9,7 @@ namespace BankStatementApi.Services
         Category GetCategoryForTransactionName(string transactionName);
 
         bool SaveCategory(CategoryDto categoryDto);
+
+        List<Category> RetrieveCategoriesForUserId();
     }
 }

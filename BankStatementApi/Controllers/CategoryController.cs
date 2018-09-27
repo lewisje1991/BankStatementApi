@@ -1,10 +1,10 @@
 ﻿using BankStatementApi.DTOs;
 using BankStatementApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 
 namespace BankStatementApi.Controllers
@@ -21,13 +21,26 @@ namespace BankStatementApi.Controllers
             _transactionService = transactionService;
         }
 
+        // GET api/category
+        [Authorize]
+        [HttpGet]
+        public IActionResult Get()
+        {
+            var categories = _categoryService.RetrieveCategoriesForUserId();
+
+            if(categories == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An Error Occured During Retrieval of Categories");
+            }
+
+            return Ok(categories);
+        }
+
         // POST api/category
         [Authorize]
         [HttpPost]
         public IActionResult Post([FromBody]CategoryDto categoryDto)
         {
-            string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

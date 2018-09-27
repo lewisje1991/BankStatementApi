@@ -10,16 +10,16 @@ namespace BankStatementApi.Services
     public class TransactionService : ITransactionService
     {
         private ITransactionRepository _transactionRepository;
-
         private ICsvService _csvService;
-
         private ICategoryService _categoryService;
+        private IUserService _userService;
 
-        public TransactionService(ITransactionRepository transactionRepository, ICsvService csvService, ICategoryService categoryService)
+        public TransactionService(ITransactionRepository transactionRepository, ICsvService csvService, ICategoryService categoryService, IUserService userService)
         {
             _transactionRepository = transactionRepository;
             _csvService = csvService;
             _categoryService = categoryService;
+            _userService = userService;
         }
 
         public bool ProcessTransactions(MemoryStream postedFile, string bankName)
@@ -37,7 +37,7 @@ namespace BankStatementApi.Services
                     Credit = transactionDto.Credit,
                     Debit = transactionDto.Debit,
                     Description = transactionDto.Description,
-                    UserId = 1,
+                    UserId = _userService.GetCurrentUserId(),
                 };
                 transactionModels.Add(model);
             });

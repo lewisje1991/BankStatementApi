@@ -9,10 +9,17 @@ namespace BankStatementApi.Services
     public class CategoryService : ICategoryService
     {
         private ICategoryRepository _categoryRepository;
+        private readonly IUserService _userService;
 
-        public CategoryService(ICategoryRepository categoryReposiory)
+        public CategoryService(ICategoryRepository categoryReposiory, IUserService userService)
         {
             _categoryRepository = categoryReposiory;
+            _userService = userService;
+        }
+
+        public List<Category> RetrieveCategoriesForUserId()
+        {
+           return _categoryRepository.GetAll().Where(x => x.UserId == _userService.GetCurrentUserId()).ToList();
         }
 
         public Category GetCategoryForTransactionName(string transactionName)
@@ -37,7 +44,7 @@ namespace BankStatementApi.Services
                 Target = categoryDto.Target,
                 Name = categoryDto.Name.ToLower(),
                 TransactionNames = categoryDto.TransactionNames.ToLower().Trim(),
-                UserId = 1
+                UserId = _userService.GetCurrentUserId()
             };
 
             _categoryRepository.Add(model);

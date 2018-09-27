@@ -8,7 +8,7 @@ namespace BankStatementApi.Models
         public string Name { get; set; }
         public string TransactionNames { get; set; }
         public decimal Target { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         public virtual ICollection<Transaction> Transactions { get; set; }
     }

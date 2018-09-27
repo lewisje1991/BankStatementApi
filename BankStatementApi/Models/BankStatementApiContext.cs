@@ -11,7 +11,6 @@ namespace BankStatementApi.Models
         }
 
         public virtual DbSet<Transaction> Transactions { get; set; }
-        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
     }
 }

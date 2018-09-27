@@ -11,14 +11,16 @@ namespace Tests.Services
     [TestClass]
     public class CategoryServiceTest
     {
-        private Mock<ICategoryRepository> mockCategoryRepository;
-        private CategoryService testSubject;
+        private Mock<ICategoryRepository> _mockCategoryRepository;
+        private Mock<IUserService> _mockUserService;
+        private CategoryService _testSubject;
 
         [TestInitialize]
         public void Setup()
         {
-            mockCategoryRepository = new Mock<ICategoryRepository>();
-            testSubject = new CategoryService(mockCategoryRepository.Object);
+            _mockCategoryRepository = new Mock<ICategoryRepository>();
+            _mockUserService = new Mock<IUserService>();
+            _testSubject = new CategoryService(_mockCategoryRepository.Object, _mockUserService.Object);
         }
 
         [TestMethod]
@@ -31,10 +33,10 @@ namespace Tests.Services
                 Target = 100
             };
 
-            mockCategoryRepository.Setup(x => x.GetAll()).Returns(new List<Category>(){
+            _mockCategoryRepository.Setup(x => x.GetAll()).Returns(new List<Category>(){
                 category
             });
-            var response = testSubject.GetCategoryForTransactionName("Cake");
+            var response = _testSubject.GetCategoryForTransactionName("Cake");
 
             Assert.AreEqual(category, response);
         }
@@ -49,10 +51,10 @@ namespace Tests.Services
                 Target = 100
             };
 
-            mockCategoryRepository.Setup(x => x.GetAll()).Returns(new List<Category>(){
+            _mockCategoryRepository.Setup(x => x.GetAll()).Returns(new List<Category>(){
                 category
             });
-            var response = testSubject.GetCategoryForTransactionName("Cake");
+            var response = _testSubject.GetCategoryForTransactionName("Cake");
 
             Assert.AreEqual(null, response);
         }
@@ -67,11 +69,11 @@ namespace Tests.Services
                 Target = 100
             };
 
-            mockCategoryRepository.Setup(x => x.Save()).Returns(1);
+            _mockCategoryRepository.Setup(x => x.Save()).Returns(1);
 
-            var response = testSubject.SaveCategory(categoryDto);
+            var response = _testSubject.SaveCategory(categoryDto);
 
-            mockCategoryRepository.Verify(x => x.Add(It.IsAny<Category>()), Times.Once);
+            _mockCategoryRepository.Verify(x => x.Add(It.IsAny<Category>()), Times.Once);
         }
 
         [TestMethod]
@@ -84,11 +86,11 @@ namespace Tests.Services
                 Target = 100
             };
 
-            mockCategoryRepository.Setup(x => x.Save()).Returns(1);
+            _mockCategoryRepository.Setup(x => x.Save()).Returns(1);
 
-            var response = testSubject.SaveCategory(categoryDto);
+            var response = _testSubject.SaveCategory(categoryDto);
 
-            mockCategoryRepository.Verify(x => x.Add(It.Is<Category>(p => p.Name == "test" && p.TransactionNames == "no match")), Times.Once);
+            _mockCategoryRepository.Verify(x => x.Add(It.Is<Category>(p => p.Name == "test" && p.TransactionNames == "no match")), Times.Once);
         }
 
         [TestMethod]
@@ -101,9 +103,9 @@ namespace Tests.Services
                 Target = 100
             };
 
-            mockCategoryRepository.Setup(x => x.Save()).Returns(1);
+            _mockCategoryRepository.Setup(x => x.Save()).Returns(1);
 
-            var response = testSubject.SaveCategory(categoryDto);
+            var response = _testSubject.SaveCategory(categoryDto);
 
             Assert.IsTrue(response);
         }
@@ -118,9 +120,9 @@ namespace Tests.Services
                 Target = 100
             };
 
-            mockCategoryRepository.Setup(x => x.Save()).Returns(0);
+            _mockCategoryRepository.Setup(x => x.Save()).Returns(0);
 
-            var response = testSubject.SaveCategory(categoryDto);
+            var response = _testSubject.SaveCategory(categoryDto);
 
             Assert.IsFalse(response);
         }
